@@ -1,8 +1,8 @@
 package org.example
 
-class JsonArray(private val map: List<Any>) : JsonElement() {
+class JsonArray(private val list: List<Any>) : JsonElement() {
   fun getString(index: Int): String {
-    val value = map[index]
+    val value = list[index]
     if (value is String) {
       return value
     }
@@ -11,7 +11,7 @@ class JsonArray(private val map: List<Any>) : JsonElement() {
   }
 
   fun getInt(index: Int): Int {
-    val value = map[index]
+    val value = list[index]
     if (value is Int) {
       return value
     }
@@ -20,7 +20,7 @@ class JsonArray(private val map: List<Any>) : JsonElement() {
   }
 
   fun getBoolean(index: Int): Boolean {
-    val value = map[index]
+    val value = list[index]
     if (value is Boolean) {
       return value
     }
@@ -29,7 +29,7 @@ class JsonArray(private val map: List<Any>) : JsonElement() {
   }
 
   fun getObject(index: Int): JsonObject {
-    val value = map[index]
+    val value = list[index]
     if (value is JsonObject) {
       return value
     }
@@ -38,11 +38,16 @@ class JsonArray(private val map: List<Any>) : JsonElement() {
   }
 
   fun getArray(index: Int): JsonArray {
-    val value = map[index]
+    val value = list[index]
     if (value is JsonArray) {
       return value
     }
 
     throw RuntimeException("Invalid type")
+  }
+
+  fun isNull(index: Int): Boolean {
+    val value = list[index]
+    return value is JsonNull
   }
 }

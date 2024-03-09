@@ -45,4 +45,9 @@ class JsonObject(private val map: Map<String, Any>) : JsonElement() {
 
     throw RuntimeException("Invalid type")
   }
+
+  fun isNull(key: String): Boolean {
+    val value = map[key]
+    return value is JsonNull
+  }
 }

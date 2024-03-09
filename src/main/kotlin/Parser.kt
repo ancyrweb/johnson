@@ -135,6 +135,8 @@ class Parser(data: String) {
     val value = builder.toString()
     if (value == "true" || value == "false") {
       return value == "true"
+    } else if (value == "null") {
+      return JsonNull()
     }
 
     throw RuntimeException("Invalid JSON")

@@ -101,6 +101,16 @@ class ParserTests {
       assertEquals(true, obj.getArray("key").getBoolean(1))
       assertEquals("three", obj.getArray("key").getString(2))
     }
+
+    @Test
+    fun `parse a null value`() {
+      val obj =
+        Parser("""{"name": null}""")
+          .parse()
+          .asObject()
+
+      assertEquals(true, obj.isNull("name"))
+    }
   }
 
   @Nested
@@ -145,7 +155,9 @@ class ParserTests {
                     "first" :   "Anthony", 
                     "second":   "Cyrille",
                     "age":      29,
-                    "senior":   false
+                    "senior":   false,
+                    "items":    [1, "two", true, null],
+                    "lastJob":  null
                 }
             }   
          """
@@ -159,6 +171,14 @@ class ParserTests {
       assertEquals("Cyrille", name.getString("second"))
       assertEquals(29, name.getInt("age"))
       assertEquals(false, name.getBoolean("senior"))
+
+      val items = name.getArray("items");
+      assertEquals(1, items.getInt(0))
+      assertEquals("two", items.getString(1))
+      assertEquals(true, items.getBoolean(2))
+      assertEquals(true, items.isNull(3))
+
+      assertEquals(true, name.isNull("lastJob"))
     }
   }
 
