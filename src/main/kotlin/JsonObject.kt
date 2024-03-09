@@ -27,4 +27,13 @@ class JsonObject(private val map: Map<String, Any>) {
 
     throw RuntimeException("Invalid type")
   }
+
+  fun getObject(key: String): JsonObject {
+    val value = map[key]
+    if (value is JsonObject) {
+      return value
+    }
+
+    throw RuntimeException("Invalid type")
+  }
 }

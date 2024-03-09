@@ -2,11 +2,14 @@ package org.example
 
 class Parser(data: String) {
   private val json = data.trim()
-  private val map = HashMap<String, Any>()
   private var current = 0
 
   private fun trim() {
-    while (json[current].isWhitespace()) {
+    while (
+      json[current].isWhitespace() ||
+      json[current] == '\n' ||
+      json[current] == '\t'
+    ) {
       current++
     }
   }
@@ -28,10 +31,25 @@ class Parser(data: String) {
     return json[current - 1]
   }
 
-  fun parse(): JsonRoot {
-    consume('{')
+  private fun eof(): Boolean {
+    return current === json.length;
+  }
 
+  fun parse(): JsonRoot {
+    val obj = parseObj()
+
+    if (!eof()) {
+      throw RuntimeException("Invalid JSON : expected EOF")
+    }
+
+    return JsonRoot(obj)
+  }
+
+  fun parseObj(): JsonObject {
+    val map = HashMap<String, Any>()
     val builder = StringBuilder()
+
+    consume('{')
 
     while (true) {
       trim()
@@ -85,12 +103,15 @@ class Parser(data: String) {
         if (value == "true" || value == "false") {
           map[key] = value == "true"
         }
+      } else if (peek() == '{') {
+        map[key] = parseObj()
       } else {
         throw RuntimeException("Invalid JSON")
       }
 
       trim()
       if (peek() == '}') {
+        consume('}')
         break
       }
 
@@ -98,6 +119,7 @@ class Parser(data: String) {
       trim()
     }
 
-    return JsonRoot(JsonObject(map))
+    return JsonObject(map)
   }
+
 }
