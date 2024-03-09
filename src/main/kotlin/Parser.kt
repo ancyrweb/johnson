@@ -110,48 +110,57 @@ class Parser(data: String) {
   }
 
   private fun parseValue(): Any {
-    if (peek() == '"') {
-      // It's a string
-      consume('"')
+    when (peek()) {
+      '"' -> return parseString()
+      '{' -> return parseObj()
+      '[' -> return parseArray()
+      else -> {
+        if (peek().isDigit()) {
+          return parseInt()
+        } else if (peek().isLetter()) {
+          return parseKeyword()
+        }
 
-      builder.clear()
-      while (peek() != '"') {
-        builder.append(advance())
+        throw RuntimeException("Invalid JSON")
       }
+    }
+  }
 
-      consume('"')
-      return builder.toString()
-    } else if (peek().isDigit()) {
-      // It's a number
-      var number = 0
+  private fun parseKeyword(): Any {
+    builder.clear()
+    while (peek().isLetter()) {
+      builder.append(advance())
+    }
 
-      while (peek().isDigit()) {
-        number *= 10
-        number += advance().digitToInt()
-      }
-
-      return number
-    } else if (peek().isLetter()) {
-      // It's a keyword
-
-      builder.clear()
-      while (peek().isLetter()) {
-        builder.append(advance())
-      }
-
-      val value = builder.toString()
-      if (value == "true" || value == "false") {
-        return value == "true"
-      }
-
-      throw RuntimeException("Invalid JSON")
-    } else if (peek() == '{') {
-      return parseObj()
-    } else if (peek() == '[') {
-      return parseArray()
+    val value = builder.toString()
+    if (value == "true" || value == "false") {
+      return value == "true"
     }
 
     throw RuntimeException("Invalid JSON")
   }
 
+  private fun parseInt(): Int {
+    // It's a number
+    var number = 0
+
+    while (peek().isDigit()) {
+      number *= 10
+      number += advance().digitToInt()
+    }
+
+    return number
+  }
+
+  private fun parseString(): String {
+    consume('"')
+
+    builder.clear()
+    while (peek() != '"') {
+      builder.append(advance())
+    }
+
+    consume('"')
+    return builder.toString()
+  }
 }
