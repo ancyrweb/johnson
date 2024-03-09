@@ -3,6 +3,7 @@ package org.example
 class Parser(data: String) {
   private val json = data.trim()
   private var current = 0
+  private val builder = StringBuilder()
 
   private fun trim() {
     while (
@@ -45,9 +46,8 @@ class Parser(data: String) {
     return JsonRoot(obj)
   }
 
-  fun parseObj(): JsonObject {
+  private fun parseObj(): JsonObject {
     val map = HashMap<String, Any>()
-    val builder = StringBuilder()
 
     consume('{')
 
@@ -67,47 +67,7 @@ class Parser(data: String) {
       consume(':')
       trim()
 
-
-      if (peek() == '"') {
-        // It's a string
-        consume('"')
-
-        builder.clear()
-        while (peek() != '"') {
-          builder.append(advance())
-        }
-
-        val value = builder.toString()
-        map[key] = value
-
-        consume('"')
-      } else if (peek().isDigit()) {
-        // It's a number
-        var number = 0
-
-        while (peek().isDigit()) {
-          number *= 10
-          number += advance().digitToInt()
-        }
-
-        map[key] = number
-      } else if (peek().isLetter()) {
-        // It's a keyword
-
-        builder.clear()
-        while (peek().isLetter()) {
-          builder.append(advance())
-        }
-
-        val value = builder.toString()
-        if (value == "true" || value == "false") {
-          map[key] = value == "true"
-        }
-      } else if (peek() == '{') {
-        map[key] = parseObj()
-      } else {
-        throw RuntimeException("Invalid JSON")
-      }
+      map[key] = parseValue()
 
       trim()
       if (peek() == '}') {
@@ -120,6 +80,50 @@ class Parser(data: String) {
     }
 
     return JsonObject(map)
+  }
+
+  fun parseValue(): Any {
+    if (peek() == '"') {
+      // It's a string
+      consume('"')
+
+      builder.clear()
+      while (peek() != '"') {
+        builder.append(advance())
+      }
+
+      consume('"')
+      return builder.toString()
+    } else if (peek().isDigit()) {
+      // It's a number
+      var number = 0
+
+      while (peek().isDigit()) {
+        number *= 10
+        number += advance().digitToInt()
+      }
+
+      return number
+    } else if (peek().isLetter()) {
+      // It's a keyword
+
+      builder.clear()
+      while (peek().isLetter()) {
+        builder.append(advance())
+      }
+
+      val value = builder.toString()
+      if (value == "true" || value == "false") {
+        return value == "true"
+      }
+
+      throw RuntimeException("Invalid JSON")
+    } else if (peek() == '{') {
+      return parseObj()
+    }
+
+    throw RuntimeException("Invalid JSON")
+
   }
 
 }

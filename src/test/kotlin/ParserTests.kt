@@ -51,25 +51,7 @@ class ParserTests {
 
       assertEquals(false, obj.getBoolean("key"))
     }
-  }
 
-  @Nested
-  inner class MultipleValues {
-    @Test
-    fun `parse a simple object`() {
-      val obj =
-        Parser("""{"name":"toto","age":23,"rich":false}""")
-          .parse()
-          .asObject()
-
-      assertEquals("toto", obj.getString("name"))
-      assertEquals(23, obj.getInt("age"))
-      assertEquals(false, obj.getBoolean("rich"))
-    }
-  }
-
-  @Nested
-  inner class NestedObjects {
     @Test
     fun `parse a simple nested object`() {
       val obj =
@@ -97,8 +79,32 @@ class ParserTests {
 
       assertEquals(true, result)
     }
+
+    @Test
+    fun `parse an array`() {
+      val obj = Parser("""{"key":false}""")
+        .parse()
+        .asObject()
+
+      assertEquals(false, obj.getBoolean("key"))
+    }
   }
 
+  @Nested
+  inner class MultipleValues {
+    @Test
+    fun `parse a simple object`() {
+      val obj =
+        Parser("""{"name":"toto","age":23,"rich":false}""")
+          .parse()
+          .asObject()
+
+      assertEquals("toto", obj.getString("name"))
+      assertEquals(23, obj.getInt("age"))
+      assertEquals(false, obj.getBoolean("rich"))
+    }
+  }
+  
   @Nested
   inner class DifferentTemplateTests {
     @Test
