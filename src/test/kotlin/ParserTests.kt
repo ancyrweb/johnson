@@ -81,12 +81,25 @@ class ParserTests {
     }
 
     @Test
-    fun `parse an array`() {
-      val obj = Parser("""{"key":false}""")
+    fun `parse a root array`() {
+      val obj = Parser("""[1, true, "three"]""")
+        .parse()
+        .asArray()
+
+      assertEquals(1, obj.getInt(0))
+      assertEquals(true, obj.getBoolean(1))
+      assertEquals("three", obj.getString(2))
+    }
+
+    @Test
+    fun `parse a nested array`() {
+      val obj = Parser("""{"key":[1, true, "three"]}""")
         .parse()
         .asObject()
 
-      assertEquals(false, obj.getBoolean("key"))
+      assertEquals(1, obj.getArray("key").getInt(0))
+      assertEquals(true, obj.getArray("key").getBoolean(1))
+      assertEquals("three", obj.getArray("key").getString(2))
     }
   }
 
@@ -104,7 +117,7 @@ class ParserTests {
       assertEquals(false, obj.getBoolean("rich"))
     }
   }
-  
+
   @Nested
   inner class DifferentTemplateTests {
     @Test

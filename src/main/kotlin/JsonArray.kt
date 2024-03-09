@@ -1,8 +1,8 @@
 package org.example
 
-class JsonObject(private val map: Map<String, Any>) : JsonElement() {
-  fun getString(key: String): String {
-    val value = map[key]
+class JsonArray(private val map: List<Any>) : JsonElement() {
+  fun getString(index: Int): String {
+    val value = map[index]
     if (value is String) {
       return value
     }
@@ -10,8 +10,8 @@ class JsonObject(private val map: Map<String, Any>) : JsonElement() {
     throw RuntimeException("Invalid type")
   }
 
-  fun getInt(key: String): Int {
-    val value = map[key]
+  fun getInt(index: Int): Int {
+    val value = map[index]
     if (value is Int) {
       return value
     }
@@ -19,8 +19,8 @@ class JsonObject(private val map: Map<String, Any>) : JsonElement() {
     throw RuntimeException("Invalid type")
   }
 
-  fun getBoolean(key: String): Boolean {
-    val value = map[key]
+  fun getBoolean(index: Int): Boolean {
+    val value = map[index]
     if (value is Boolean) {
       return value
     }
@@ -28,8 +28,8 @@ class JsonObject(private val map: Map<String, Any>) : JsonElement() {
     throw RuntimeException("Invalid type")
   }
 
-  fun getObject(key: String): JsonObject {
-    val value = map[key]
+  fun getObject(index: Int): JsonObject {
+    val value = map[index]
     if (value is JsonObject) {
       return value
     }
@@ -37,8 +37,8 @@ class JsonObject(private val map: Map<String, Any>) : JsonElement() {
     throw RuntimeException("Invalid type")
   }
 
-  fun getArray(key: String): JsonArray {
-    val value = map[key]
+  fun getArray(index: Int): JsonArray {
+    val value = map[index]
     if (value is JsonArray) {
       return value
     }

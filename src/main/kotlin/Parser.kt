@@ -33,11 +33,15 @@ class Parser(data: String) {
   }
 
   private fun eof(): Boolean {
-    return current === json.length;
+    return current == json.length;
   }
 
   fun parse(): JsonRoot {
-    val obj = parseObj()
+    val obj = when (peek()) {
+      '{' -> parseObj()
+      '[' -> parseArray()
+      else -> throw RuntimeException("Invalid JSON")
+    }
 
     if (!eof()) {
       throw RuntimeException("Invalid JSON : expected EOF")
@@ -47,9 +51,9 @@ class Parser(data: String) {
   }
 
   private fun parseObj(): JsonObject {
-    val map = HashMap<String, Any>()
-
     consume('{')
+
+    val map = HashMap<String, Any>()
 
     while (true) {
       trim()
@@ -82,7 +86,30 @@ class Parser(data: String) {
     return JsonObject(map)
   }
 
-  fun parseValue(): Any {
+  private fun parseArray(): JsonArray {
+    consume('[')
+
+    val items = ArrayList<Any>()
+
+    while (true) {
+      trim()
+
+      val value = parseValue()
+      items.add(value)
+
+      trim()
+      if (peek() == ']') {
+        consume(']')
+        break
+      }
+
+      consume(',')
+    }
+
+    return JsonArray(items)
+  }
+
+  private fun parseValue(): Any {
     if (peek() == '"') {
       // It's a string
       consume('"')
@@ -120,10 +147,11 @@ class Parser(data: String) {
       throw RuntimeException("Invalid JSON")
     } else if (peek() == '{') {
       return parseObj()
+    } else if (peek() == '[') {
+      return parseArray()
     }
 
     throw RuntimeException("Invalid JSON")
-
   }
 
 }
