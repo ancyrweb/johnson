@@ -146,7 +146,7 @@ class ParserTests {
     }
 
     @Test
-    fun `parse an object with line breaks`() {
+    fun `parse an object with line breaks, spaces and tabs`() {
       val obj =
         Parser(
           """

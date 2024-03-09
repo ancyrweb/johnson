@@ -1,6 +1,6 @@
 package org.example
 
-class JsonRoot(private val root: JsonElement) {
+class JsonRoot(private val root: Any) {
   fun asObject(): JsonObject {
     if (root is JsonObject) {
       return root

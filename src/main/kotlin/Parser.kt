@@ -37,11 +37,7 @@ class Parser(data: String) {
   }
 
   fun parse(): JsonRoot {
-    val obj = when (peek()) {
-      '{' -> parseObj()
-      '[' -> parseArray()
-      else -> throw RuntimeException("Invalid JSON")
-    }
+    val obj = parseValue()
 
     if (!eof()) {
       throw RuntimeException("Invalid JSON : expected EOF")
@@ -143,7 +139,6 @@ class Parser(data: String) {
   }
 
   private fun parseInt(): Int {
-    // It's a number
     var number = 0
 
     while (peek().isDigit()) {
